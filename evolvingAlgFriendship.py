@@ -177,6 +177,10 @@ class Friendship_Guesser:
         else:
             for a in animals_list:
                 child.weights[a] = g2.weights[a]
+        if random.random() < .5:
+            child.threshold = g1.threshold
+        else:
+            child.threshold = g2.threshold
         return child
 
 
@@ -195,7 +199,10 @@ class Evolution:
     def evolveOneGen(self):
         sorted(self.population, key = lambda g: g.guess_for_all())
         self.population = self.population[: len(self.population)//2]
-        '''Need to add in crossover here'''
+        for p in self.population:
+            partner = random.choice(self.population)
+            child = Friendship_Guesser.recombination(p, partner, self.people)
+            self.population.append(child)
         for p in self.population:
             p.mutate()
 
@@ -220,5 +227,11 @@ all_p.add_person(p2)
 all_p.add_person(p3)
 all_p.add_friends(p1.name, p3.name)
 
+f1 = Friendship_Guesser(all_p)
+
+Friendship_Guesser.recombination(f1, f1, all_p)
+
 evolution = Evolution(all_p, 4)
-evolution.evolveOneGen()
+
+
+'''evolution.evolveOneGen()'''
